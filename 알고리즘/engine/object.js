@@ -22,6 +22,31 @@ export class Object {
     isColliding(obj) {
         return this.shape.isColliding(this.position, obj.position, obj.shape);
     }
+    onUpdate(t) {}
+    onCollide(obj) {}
+}
+
+export class Ball extends Object {
+    a; v; pasty;
+    constructor(position){
+        super(position, new Circle(25));
+        this.a = [0,0];
+        this.v = [0,0];
+    }
+    onUpdate(t){
+        this.pasty = this.position[1];
+        this.v[0] += this.a[0]*t;
+        this.position[0] +=  this.v[0]*t;
+
+        this.v[1] += this.a[1]*t;
+        this.position[1] +=  this.v[1]*t;
+    }
+    onCollide(obj){
+        // this.v[1] = -500;
+
+        this.position[1] = this.pasty; //물리현상이랑 다르게 과거y값, 충돌감지, 터널링등등 구현해야함 
+        this.v[1] = this.v[1] * -0.5;
+    }
 }
 
 export class Rectangle {
@@ -48,8 +73,8 @@ export class Rectangle {
             const cx = opos[0], 
             cy = opos[1],
             r = oshape.r; 
-            const closet_x = Math.max(x1, Math.min(cx, x1+w1));
-            const closet_y = Math.max(y1, Math.min(cy, y1+h1));
+            const closet_x = Math.max(x1-w1/2, Math.min(cx, x1+w1/2));
+            const closet_y = Math.max(y1-h1/2, Math.min(cy, y1+h1/2));
 
             const dx = cx - closet_x;
             const dy = cy - closet_y;
@@ -67,8 +92,8 @@ export class Circle {
     el;
     constructor(r) {
         this.r = r;
-        this.width = r;
-        this.height = r;
+        this.width = r*2;
+        this.height = r*2;
     }
     render() {
         this.el.style.width = this.width + 'px';
